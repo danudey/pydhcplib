@@ -15,10 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import operator
 from struct import unpack
 from struct import pack
-from dhcp_constants import *
+from . import dhcp_constants
 import sys
 
 
@@ -28,11 +27,11 @@ class DhcpBasicPacket:
     def __init__(self):
         self.packet_data = [0]*240
         self.options_data = {}
-        self.packet_data[236:240] = MagicCookie
+        self.packet_data[236:240] = dhcp_constants.MagicCookie
         self.source_address = False
         
     def IsDhcpPacket(self):
-        if self.packet_data[236:240] != MagicCookie : return False
+        if self.packet_data[236:240] != dhcp_constants.MagicCookie : return False
         return True
 
     # Check if variable is a list with int between 0 and 255
@@ -48,10 +47,10 @@ class DhcpBasicPacket:
     def DeleteOption(self,name):
         # if name is a standard dhcp field
         # Set field to 0
-        if DhcpFields.has_key(name) :
-            begin = DhcpFields[name][0]
-            end = DhcpFields[name][0]+DhcpFields[name][1]
-            self.packet_data[begin:end] = [0]*DhcpFields[name][1]
+        if dhcp_constants.DhcpFields.has_key(name) :
+            begin = dhcp_constants.DhcpFields[name][0]
+            end = dhcp_constants.DhcpFields[name][0]+dhcp_constants.DhcpFields[name][1]
+            self.packet_data[begin:end] = [0]*dhcp_constants.DhcpFields[name][1]
             return True
 
         # if name is a dhcp option
@@ -64,8 +63,8 @@ class DhcpBasicPacket:
         return False
 
     def GetOption(self,name):
-        if DhcpFields.has_key(name) :
-            option_info = DhcpFields[name]
+        if dhcp_constants.DhcpFields.has_key(name) :
+            option_info = dhcp_constants.DhcpFields[name]
             return self.packet_data[option_info[0]:option_info[0]+option_info[1]]
 
         elif self.options_data.has_key(name) :
@@ -80,17 +79,17 @@ class DhcpBasicPacket:
         # has value list a correct length
         
         # if name is a standard dhcp field
-        if DhcpFields.has_key(name) :
-            if len(value) != DhcpFields[name][1] :
+        if dhcp_constants.DhcpFields.has_key(name) :
+            if len(value) != dhcp_constants.DhcpFields[name][1] :
                 sys.stderr.write( "pydhcplib.dhcp_basic_packet.setoption error, bad option length : "+name)
                 return False
-            begin = DhcpFields[name][0]
-            end = DhcpFields[name][0]+DhcpFields[name][1]
+            begin = dhcp_constants.DhcpFields[name][0]
+            end = dhcp_constants.DhcpFields[name][0]+dhcp_constants.DhcpFields[name][1]
             self.packet_data[begin:end] = value
             return True
 
         # if name is a dhcp option
-        elif DhcpOptions.has_key(name) :
+        elif dhcp_constants.DhcpOptions.has_key(name) :
 
             # fields_specs : {'option_code':fixed_length,minimum_length,multiple}
             # if fixed_length == 0 : minimum_length and multiple apply
@@ -104,7 +103,7 @@ class DhcpBasicPacket:
                              "RFC3397":[0,4,1],"none":[0,0,1],"char+":[0,1,1]
                              }
             
-            specs = fields_specs[DhcpOptionsTypes[DhcpOptions[name]]]
+            specs = fields_specs[dhcp_constants.DhcpOptionsTypes[dhcp_constants.DhcpOptions[name]]]
             length = len(value)
             if (specs[0]!=0 and specs==length) or (specs[1]<=length and length%specs[2]==0):
                 self.options_data[name] = value
@@ -119,7 +118,7 @@ class DhcpBasicPacket:
 
     def IsOption(self,name):
         if self.options_data.has_key(name) : return True
-        elif DhcpFields.has_key(name) : return True
+        elif dhcp_constants.DhcpFields.has_key(name) : return True
         else : return False
 
     # Encode Packet and return it
@@ -129,10 +128,10 @@ class DhcpBasicPacket:
         order = {}
 
         for each in self.options_data.keys() :
-            order[DhcpOptions[each]] = []
-            order[DhcpOptions[each]].append(DhcpOptions[each])
-            order[DhcpOptions[each]].append(len(self.options_data[each]))
-            order[DhcpOptions[each]] += self.options_data[each]
+            order[dhcp_constants.DhcpOptions[each]] = []
+            order[dhcp_constants.DhcpOptions[each]].append(dhcp_constants.DhcpOptions[each])
+            order[dhcp_constants.DhcpOptions[each]].append(len(self.options_data[each]))
+            order[dhcp_constants.DhcpOptions[each]] += self.options_data[each]
             
         options = []
 
@@ -163,7 +162,7 @@ class DhcpBasicPacket:
         # These 4 lines search magic cookie and begin iterator after.
         iterator = 236
         end_iterator = len(self.packet_data)
-        while ( self.packet_data[iterator:iterator+4] != MagicCookie and iterator < end_iterator) :
+        while ( self.packet_data[iterator:iterator+4] != dhcp_constants.MagicCookie and iterator < end_iterator) :
             iterator += 1
         iterator += 4
         
@@ -178,10 +177,10 @@ class DhcpBasicPacket:
                 self.packet_data = self.packet_data[:240] # base packet length without magic cookie
                 return
                 
-            elif DhcpOptionsTypes.has_key(self.packet_data[iterator]) and self.packet_data[iterator]!= 255:
+            elif dhcp_constants.DhcpOptionsTypes.has_key(self.packet_data[iterator]) and self.packet_data[iterator]!= 255:
                 opt_len = self.packet_data[iterator+1]
                 opt_first = iterator+1
-                self.options_data[DhcpOptionsList[self.packet_data[iterator]]] = self.packet_data[opt_first+1:opt_len+opt_first+1]
+                self.options_data[dhcp_constants.DhcpOptionsList[self.packet_data[iterator]]] = self.packet_data[opt_first+1:opt_len+opt_first+1]
                 iterator += self.packet_data[opt_first] + 2
             else :
                 opt_first = iterator+1

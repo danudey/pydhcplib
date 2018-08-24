@@ -15,41 +15,37 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import operator
-from struct import unpack
-from struct import pack
-from dhcp_basic_packet import *
-from dhcp_constants import *
-from type_ipv4 import ipv4
-from type_strlist import strlist
-from type_hwmac import hwmac
-import sys
+from .dhcp_basic_packet import DhcpBasicPacket
+from . import dhcp_constants
+from .type_ipv4 import ipv4
+from .type_strlist import strlist
+from .type_hwmac import hwmac
 
 class DhcpPacket(DhcpBasicPacket):
     def str(self):
         # Process headers : 
         printable_data = "# Header fields\n"
 
-        op = self.packet_data[DhcpFields['op'][0]:DhcpFields['op'][0]+DhcpFields['op'][1]]
-        printable_data += "op : " + DhcpFieldsName['op'][str(op[0])] + "\n"
+        op = self.packet_data[dhcp_constants.DhcpFields['op'][0]:dhcp_constants.DhcpFields['op'][0]+dhcp_constants.DhcpFields['op'][1]]
+        printable_data += "op : " + dhcp_constants.DhcpFieldsName['op'][str(op[0])] + "\n"
 
         
         for opt in  ['htype','hlen','hops','xid','secs','flags',
                      'ciaddr','yiaddr','siaddr','giaddr','chaddr','sname','file'] :
-            begin = DhcpFields[opt][0]
-            end = DhcpFields[opt][0]+DhcpFields[opt][1]
+            begin = dhcp_constants.DhcpFields[opt][0]
+            end = dhcp_constants.DhcpFields[opt][0]+dhcp_constants.DhcpFields[opt][1]
             data = self.packet_data[begin:end]
             result = ''
-            if DhcpFieldsTypes[opt] == "int" : result = str(data[0])
-            elif DhcpFieldsTypes[opt] == "int2" : result = str(data[0]*256+data[1])
-            elif DhcpFieldsTypes[opt] == "int4" : result = str(ipv4(data).int())
-            elif DhcpFieldsTypes[opt] == "str" :
+            if dhcp_constants.DhcpFieldsTypes[opt] == "int" : result = str(data[0])
+            elif dhcp_constants.DhcpFieldsTypes[opt] == "int2" : result = str(data[0]*256+data[1])
+            elif dhcp_constants.DhcpFieldsTypes[opt] == "int4" : result = str(ipv4(data).int())
+            elif dhcp_constants.DhcpFieldsTypes[opt] == "str" :
                 for each in data :
                     if each != 0 : result += chr(each)
                     else : break
 
-            elif DhcpFieldsTypes[opt] == "ipv4" : result = ipv4(data).str()
-            elif DhcpFieldsTypes[opt] == "hwmac" :
+            elif dhcp_constants.DhcpFieldsTypes[opt] == "ipv4" : result = ipv4(data).str()
+            elif dhcp_constants.DhcpFieldsTypes[opt] == "hwmac" :
                 result = []
                 hexsym = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f']
                 for iterator in range(6) :
@@ -65,24 +61,24 @@ class DhcpPacket(DhcpBasicPacket):
         for opt in self.options_data.keys():
             data = self.options_data[opt]
             result = ""
-            optnum  = DhcpOptions[opt]
-            if opt=='dhcp_message_type' : result = DhcpFieldsName['dhcp_message_type'][str(data[0])]
-            elif DhcpOptionsTypes[optnum] == "char" : result = str(data[0])
-            elif DhcpOptionsTypes[optnum] == "16-bits" : result = str(data[0]*256+data[0])
-            elif DhcpOptionsTypes[optnum] == "32-bits" : result = str(ipv4(data).int())
-            elif DhcpOptionsTypes[optnum] == "string" :
+            optnum  = dhcp_constants.DhcpOptions[opt]
+            if opt=='dhcp_message_type' : result = dhcp_constants.DhcpFieldsName['dhcp_message_type'][str(data[0])]
+            elif dhcp_constants.DhcpOptionsTypes[optnum] == "char" : result = str(data[0])
+            elif dhcp_constants.DhcpOptionsTypes[optnum] == "16-bits" : result = str(data[0]*256+data[0])
+            elif dhcp_constants.DhcpOptionsTypes[optnum] == "32-bits" : result = str(ipv4(data).int())
+            elif dhcp_constants.DhcpOptionsTypes[optnum] == "string" :
                 for each in data :
                     if each != 0 : result += chr(each)
                     else : break
         
-            elif DhcpOptionsTypes[optnum] == "ipv4" : result = ipv4(data).str()
-            elif DhcpOptionsTypes[optnum] == "ipv4+" :
+            elif dhcp_constants.DhcpOptionsTypes[optnum] == "ipv4" : result = ipv4(data).str()
+            elif dhcp_constants.DhcpOptionsTypes[optnum] == "ipv4+" :
                 for i in range(0,len(data),4) :
                     if len(data[i:i+4]) == 4 :
                         result += ipv4(data[i:i+4]).str() + " - "
-            elif DhcpOptionsTypes[optnum] == "char+" :
+            elif dhcp_constants.DhcpOptionsTypes[optnum] == "char+" :
                 if optnum == 55 : # parameter_request_list
-                    result = ','.join([DhcpOptionsList[each] for each in data])
+                    result = ','.join([dhcp_constants.DhcpOptionsList[each] for each in data])
                 else : result += str(data)
                 
             printable_data += opt + " : " + result + "\n"
@@ -106,7 +102,7 @@ class DhcpPacket(DhcpBasicPacket):
             value = value.strip()
             if value.isdigit() : return [int(value)]
             try :
-                value = DhcpNames[value.strip()]
+                value = dhcp_constants.DhcpNames[value.strip()]
                 return [value]
             except KeyError :
                 return [0]
@@ -155,16 +151,16 @@ class DhcpPacket(DhcpBasicPacket):
             value = value.strip().split(',')
             tmp = []
             for each in value:
-                if DhcpOptions.has_key(each) : tmp.append(DhcpOptions[each])
+                if dhcp_constants.DhcpOptions.has_key(each) : tmp.append(dhcp_constants.DhcpOptions[each])
             return tmp
         elif  p=='dhcp_message_type' :
             try :
-                return [DhcpNames[value]]
+                return [dhcp_constants.DhcpNames[value]]
             except KeyError:
                 return
 
         # 2- Search for options
-        try : option_type = DhcpOptionsTypes[DhcpOptions[parameter]]
+        try : option_type = dhcp_constants.DhcpOptionsTypes[dhcp_constants.DhcpOptions[parameter]]
         except KeyError : return False
 
         if option_type == "ipv4" :
