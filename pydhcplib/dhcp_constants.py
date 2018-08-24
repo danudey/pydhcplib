@@ -97,7 +97,7 @@ DhcpOptions = {'pad':0,
                'nis_domain':40,
                'nis_servers':41,
                'ntp_servers':42,
-               'vendor_specific':43,
+               'vendor_encapsulated_options':43,
                'nbns':44,
                'nbdd':45,'nb_node_type':46,
                'nb_scope':47,'x_window_system_font_server':48,
@@ -114,13 +114,13 @@ DhcpOptions = {'pad':0,
                'maximum_dhcp_message_size':57,
                'renewal_time_value':58,
                'rebinding_time_value':59,
-               'vendor_class':60,
+               'vendor_class_identifier':60,
                'client_identifier':61,
 
-               # Add from RFC 2132 
+               # Add from RFC 2132
                'netware_ip_domain_name':62,
                'netware_ip_sub_options':63,
-               
+
                'nis+_domain':64,
                'nis+_servers':65,
                'tftp_server_name':66,
@@ -218,7 +218,6 @@ DhcpOptions = {'pad':0,
                '246':246,'247':247,'248':248,'249':249,
                '250':250,'251':251,'252':252,'253':253,
                '254':254,'end':255
-
                }
 
 # DhcpOptionsList : reverse of DhcpOptions
@@ -232,32 +231,32 @@ DhcpOptionsList = ['pad',
                    'impress_server','resource_location_server',
                    'host_name','boot_file','merit_dump_file',
                    'domain_name','swap_server','root_path','extensions_path',
-                   
+
                    # IP layer parameters per host
                    'ip_forwarding','nonlocal_source_rooting',
                    'policy_filter','maximum_datagram_reassembly_size',
                    'default_ip_time-to-live','path_mtu_aging_timeout',
                    'path_mtu_table',
-                   
+
                    # IP layer parameters per interface
                    'interface_mtu','all_subnets_are_local',
                    'broadcast_address','perform_mask_discovery',
                    'mask_supplier','perform_router_discovery',
                    'routeur_solicitation_address','static_route',
-                   
+
                    # link layer parameters per interface
                    'trailer_encapsulation','arp_cache_timeout',
                    'ethernet_encapsulation',
-                   
+
                    # TCP parameters
                    'tcp_default_ttl','tcp_keepalive_interval',
                    'tcp_keepalive_garbage',
-                   
+
                    # Applications and service parameters
                    'nis_domain',
                    'nis_servers',
                    'ntp_servers',
-                   'vendor_specific','nbns',
+                   'vendor_encapsulated_options','nbns',
                    'nbdd','nd_node_type',
                    'nb_scope','x_window_system_font_server',
                    'x_window_system_display_manager',
@@ -273,9 +272,9 @@ DhcpOptionsList = ['pad',
                    'maximum_dhcp_message_size',
                    'renewal_time_value',
                    'rebinding_time_value',
-                   'vendor_class',
+                   'vendor_class_identifier',
                    'client_identifier',
-                   
+
 
                    # adds from RFC 2132,2242
                    'netware_ip_domain_name',
@@ -309,7 +308,7 @@ DhcpOptionsList = ['pad',
                    'ldap','unassigned','uuid_guid', #RFC 3679
                    'open_group_user_auth', #RFC 2485
 
-                   # 99->115 RFC3679 
+                   # 99->115 RFC3679
                    'unassigned','unassigned','unassigned',
                    'unassigned','unassigned','unassigned',
                    'unassigned','unassigned','unassigned',
@@ -341,74 +340,74 @@ DhcpOptionsList = ['pad',
                    '250','251','252','253','254',
 
                    'end'
-                   ] 
+                   ]
 
 
 # See http://www.iana.org/assignments/bootp-dhcp-parameters
 # FIXME : verify all ipv4+ options, somes are 32 bits...
 
-DhcpOptionsTypes = {0:"none", 1:"ipv4", 2:"ipv4", 3:"ipv4+", 
-                    4:"ipv4+", 5:"ipv4+", 6:"ipv4+", 7:"ipv4+", 
-                    8:"ipv4+", 9:"ipv4+", 10:"ipv4+", 11:"ipv4+", 
-                    12:"string", 13:"16-bits", 14:"string", 15:"string", 
-                    16:"ipv4", 17:"string", 18:"string", 19:"bool", 
-                    20:"bool", 21:"ipv4+", 22:"16-bits", 23:"char", 
-                    24:"ipv4", 25:"16-bits", 26:"16-bits", 27:"bool", 
-                    28:"ipv4", 29:"bool", 30:"bool", 31:"bool", 
-                    32:"ipv4", 33:"ipv4+", 34:"bool", 35:"32-bits", 
-                    36:"bool", 37:"char", 38:"32-bits", 39:"bool", 
-                    40:"string", 41:"ipv4+", 42:"ipv4+", 43:"string", 
-                    44:"ipv4+", 45:"ipv4+", 46:"char", 47:"string", 
-                    48:"ipv4+", 49:"ipv4+", 50:"ipv4", 51:"32-bits", 
-                    52:"char", 53:"char", 54:"32-bits", 55:"char+", 
-                    56:"string", 57:"16-bits", 58:"32-bits", 59:"32-bits", 
-                    60:"string", 61:"identifier", 62:"string", 63:"RFC2242", 
-                    64:"string", 65:"ipv4+", 66:"string", 67:"string", 
-                    68:"ipv4", 69:"ipv4+", 70:"ipv4+", 71:"ipv4+",                     
-                    72:"ipv4+", 73:"ipv4+", 74:"ipv4+", 75:"ipv4+", 
-                    76:"ipv4+", 77:"RFC3004", 78:"RFC2610", 79:"RFC2610", 
-                    80:"null", 81:"string", 82:"RFC3046", 83:"RFC4174", 
-                    84:"Unassigned", 85:"ipv4+", 86:"RFC2241", 87:"RFC2241", 
-                    88:"Unassigned", 89:"Unassigned", 90:"RFC3118", 91:"RFC4388", 
-                    92:"ipv4+", 93:"Unassigned", 94:"Unassigned", 95:"Unassigned", 
-                    96:"Unassigned", 97:"Unassigned", 98:"string", 99:"Unassigned", 
-                    100:"Unassigned", 101:"Unassigned", 102:"Unassigned", 103:"Unassigned", 
-                    104:"Unassigned", 105:"Unassigned", 106:"Unassigned", 107:"Unassigned", 
-                    108:"Unassigned", 109:"Unassigned", 110:"Unassigned", 111:"Unassigned", 
-                    112:"Unassigned", 113:"Unassigned", 114:"Unassigned", 115:"Unassigned", 
-                    116:"char", 117:"RFC2937", 118:"ipv4", 119:"RFC3397", 
+DhcpOptionsTypes = {0:"none", 1:"ipv4", 2:"ipv4", 3:"ipv4+",
+                    4:"ipv4+", 5:"ipv4+", 6:"ipv4+", 7:"ipv4+",
+                    8:"ipv4+", 9:"ipv4+", 10:"ipv4+", 11:"ipv4+",
+                    12:"string", 13:"16-bits", 14:"string", 15:"string",
+                    16:"ipv4", 17:"string", 18:"string", 19:"bool",
+                    20:"bool", 21:"ipv4+", 22:"16-bits", 23:"char",
+                    24:"ipv4", 25:"16-bits", 26:"16-bits", 27:"bool",
+                    28:"ipv4", 29:"bool", 30:"bool", 31:"bool",
+                    32:"ipv4", 33:"ipv4+", 34:"bool", 35:"32-bits",
+                    36:"bool", 37:"char", 38:"32-bits", 39:"bool",
+                    40:"string", 41:"ipv4+", 42:"ipv4+", 43:"string",
+                    44:"ipv4+", 45:"ipv4+", 46:"char", 47:"string",
+                    48:"ipv4+", 49:"ipv4+", 50:"ipv4", 51:"32-bits",
+                    52:"char", 53:"char", 54:"32-bits", 55:"char+",
+                    56:"string", 57:"16-bits", 58:"32-bits", 59:"32-bits",
+                    60:"string", 61:"identifier", 62:"string", 63:"RFC2242",
+                    64:"string", 65:"ipv4+", 66:"string", 67:"string",
+                    68:"ipv4", 69:"ipv4+", 70:"ipv4+", 71:"ipv4+",
+                    72:"ipv4+", 73:"ipv4+", 74:"ipv4+", 75:"ipv4+",
+                    76:"ipv4+", 77:"RFC3004", 78:"RFC2610", 79:"RFC2610",
+                    80:"null", 81:"string", 82:"RFC3046", 83:"RFC4174",
+                    84:"Unassigned", 85:"ipv4+", 86:"RFC2241", 87:"RFC2241",
+                    88:"Unassigned", 89:"Unassigned", 90:"RFC3118", 91:"RFC4388",
+                    92:"ipv4+", 93:"Unassigned", 94:"Unassigned", 95:"Unassigned",
+                    96:"Unassigned", 97:"Unassigned", 98:"string", 99:"Unassigned",
+                    100:"Unassigned", 101:"Unassigned", 102:"Unassigned", 103:"Unassigned",
+                    104:"Unassigned", 105:"Unassigned", 106:"Unassigned", 107:"Unassigned",
+                    108:"Unassigned", 109:"Unassigned", 110:"Unassigned", 111:"Unassigned",
+                    112:"Unassigned", 113:"Unassigned", 114:"Unassigned", 115:"Unassigned",
+                    116:"char", 117:"RFC2937", 118:"ipv4", 119:"RFC3397",
                     120:"RFC3361",
 
                     #TODO
-                    121:"Unassigned", 122:"Unassigned", 123:"Unassigned", 
-                    124:"Unassigned", 125:"Unassigned", 126:"Unassigned", 127:"Unassigned", 
-                    128:"Unassigned", 129:"Unassigned", 130:"Unassigned", 131:"Unassigned", 
-                    132:"Unassigned", 133:"Unassigned", 134:"Unassigned", 135:"Unassigned", 
-                    136:"Unassigned", 137:"Unassigned", 138:"Unassigned", 139:"Unassigned", 
-                    140:"Unassigned", 141:"Unassigned", 142:"Unassigned", 143:"Unassigned", 
-                    144:"Unassigned", 145:"Unassigned", 146:"Unassigned", 147:"Unassigned", 
-                    148:"Unassigned", 149:"Unassigned", 150:"Unassigned", 151:"Unassigned", 
-                    152:"Unassigned", 153:"Unassigned", 154:"Unassigned", 155:"Unassigned", 
-                    156:"Unassigned", 157:"Unassigned", 158:"Unassigned", 159:"Unassigned", 
-                    160:"Unassigned", 161:"Unassigned", 162:"Unassigned", 163:"Unassigned", 
-                    164:"Unassigned", 165:"Unassigned", 166:"Unassigned", 167:"Unassigned", 
-                    168:"Unassigned", 169:"Unassigned", 170:"Unassigned", 171:"Unassigned", 
-                    172:"Unassigned", 173:"Unassigned", 174:"Unassigned", 175:"Unassigned", 
-                    176:"Unassigned", 177:"Unassigned", 178:"Unassigned", 179:"Unassigned", 
-                    180:"Unassigned", 181:"Unassigned", 182:"Unassigned", 183:"Unassigned", 
-                    184:"Unassigned", 185:"Unassigned", 186:"Unassigned", 187:"Unassigned", 
-                    188:"Unassigned", 189:"Unassigned", 190:"Unassigned", 191:"Unassigned", 
-                    192:"Unassigned", 193:"Unassigned", 194:"Unassigned", 195:"Unassigned", 
-                    196:"Unassigned", 197:"Unassigned", 198:"Unassigned", 199:"Unassigned", 
-                    200:"Unassigned", 201:"Unassigned", 202:"Unassigned", 203:"Unassigned", 
-                    204:"Unassigned", 205:"Unassigned", 206:"Unassigned", 207:"Unassigned", 
-                    208:"Unassigned", 209:"Unassigned", 210:"Unassigned", 211:"Unassigned", 
-                    212:"Unassigned", 213:"Unassigned", 214:"Unassigned", 215:"Unassigned", 
-                    216:"Unassigned", 217:"Unassigned", 218:"Unassigned", 219:"Unassigned", 
-                    220:"Unassigned", 221:"Unassigned", 222:"Unassigned", 223:"Unassigned", 
-                    224:"Unassigned", 225:"Unassigned", 226:"Unassigned", 227:"Unassigned", 
-                    228:"Unassigned", 229:"Unassigned", 230:"Unassigned", 231:"Unassigned", 
-                    232:"Unassigned", 233:"Unassigned", 234:"Unassigned", 235:"Unassigned", 
-                    236:"Unassigned", 237:"Unassigned", 238:"Unassigned", 239:"Unassigned", 
-                    240:"Unassigned", 241:"Unassigned", 242:"Unassigned", 243:"Unassigned", 
+                    121:"Unassigned", 122:"Unassigned", 123:"Unassigned",
+                    124:"Unassigned", 125:"Unassigned", 126:"Unassigned", 127:"Unassigned",
+                    128:"Unassigned", 129:"Unassigned", 130:"Unassigned", 131:"Unassigned",
+                    132:"Unassigned", 133:"Unassigned", 134:"Unassigned", 135:"Unassigned",
+                    136:"Unassigned", 137:"Unassigned", 138:"Unassigned", 139:"Unassigned",
+                    140:"Unassigned", 141:"Unassigned", 142:"Unassigned", 143:"Unassigned",
+                    144:"Unassigned", 145:"Unassigned", 146:"Unassigned", 147:"Unassigned",
+                    148:"Unassigned", 149:"Unassigned", 150:"Unassigned", 151:"Unassigned",
+                    152:"Unassigned", 153:"Unassigned", 154:"Unassigned", 155:"Unassigned",
+                    156:"Unassigned", 157:"Unassigned", 158:"Unassigned", 159:"Unassigned",
+                    160:"Unassigned", 161:"Unassigned", 162:"Unassigned", 163:"Unassigned",
+                    164:"Unassigned", 165:"Unassigned", 166:"Unassigned", 167:"Unassigned",
+                    168:"Unassigned", 169:"Unassigned", 170:"Unassigned", 171:"Unassigned",
+                    172:"Unassigned", 173:"Unassigned", 174:"Unassigned", 175:"Unassigned",
+                    176:"Unassigned", 177:"Unassigned", 178:"Unassigned", 179:"Unassigned",
+                    180:"Unassigned", 181:"Unassigned", 182:"Unassigned", 183:"Unassigned",
+                    184:"Unassigned", 185:"Unassigned", 186:"Unassigned", 187:"Unassigned",
+                    188:"Unassigned", 189:"Unassigned", 190:"Unassigned", 191:"Unassigned",
+                    192:"Unassigned", 193:"Unassigned", 194:"Unassigned", 195:"Unassigned",
+                    196:"Unassigned", 197:"Unassigned", 198:"Unassigned", 199:"Unassigned",
+                    200:"Unassigned", 201:"Unassigned", 202:"Unassigned", 203:"Unassigned",
+                    204:"Unassigned", 205:"Unassigned", 206:"Unassigned", 207:"Unassigned",
+                    208:"Unassigned", 209:"Unassigned", 210:"Unassigned", 211:"Unassigned",
+                    212:"Unassigned", 213:"Unassigned", 214:"Unassigned", 215:"Unassigned",
+                    216:"Unassigned", 217:"Unassigned", 218:"Unassigned", 219:"Unassigned",
+                    220:"Unassigned", 221:"Unassigned", 222:"Unassigned", 223:"Unassigned",
+                    224:"Unassigned", 225:"Unassigned", 226:"Unassigned", 227:"Unassigned",
+                    228:"Unassigned", 229:"Unassigned", 230:"Unassigned", 231:"Unassigned",
+                    232:"Unassigned", 233:"Unassigned", 234:"Unassigned", 235:"Unassigned",
+                    236:"Unassigned", 237:"Unassigned", 238:"Unassigned", 239:"Unassigned",
+                    240:"Unassigned", 241:"Unassigned", 242:"Unassigned", 243:"Unassigned",
                     244:"Unassigned", 245:"Unassigned"}
